@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>変動費入力フォーム</title>
     
-    <!-- スマホアプリ化の設定 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="変動費記録">
     <meta name="mobile-web-app-capable" content="yes">
     
-    <!-- アプリアイコンの設定 -->
     <link rel="icon" href="https://fav.farm/📝">
     <link rel="apple-touch-icon" href="https://fav.farm/📝">
 
@@ -75,7 +73,7 @@
             border: 1px solid #cbd5e1;
             border-radius: 8px;
             font-size: 1rem;
-            transition: border 0.2s;
+            transition: border-0.2s;
         }
         input:focus, select:focus, textarea:focus {
             outline: none;
@@ -154,7 +152,6 @@
 <div class="container">
     <h2>変動費記録（スマホ用）</h2>
     
-    <!-- 入力フォーム -->
     <div class="card">
         <form id="expenseForm">
             <div class="form-row" style="margin-bottom: 16px;">
@@ -227,7 +224,6 @@
         <button id="clearBtn" class="btn btn-danger" style="display:none;">履歴クリア</button>
     </div>
 
-    <!-- 履歴一覧 -->
     <div class="card">
         <label>入力履歴（自動保存済み）</label>
         <div class="table-container">
@@ -246,8 +242,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- データがここに追加されます -->
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </div>
@@ -302,12 +297,11 @@
         updateClearButtonVisibility();
     }
 
-    // 單行刪除功能
     window.deleteRow = function(index) {
         if(confirm("この行のデータを削除しますか？")) {
-            dataList.splice(index, 1); // 刪除陣列中指定位置的資料
-            localStorage.setItem("permanent_data_list", JSON.stringify(dataList)); // 更新永久儲存
-            renderTable(); // 重新繪製表格
+            dataList.splice(index, 1);
+            localStorage.setItem("permanent_data_list", JSON.stringify(dataList));
+            renderTable();
         }
     }
 
@@ -321,7 +315,7 @@
         const 物件名 = document.getElementById('物件名_品名_型番').value;
         const 通常金額 = document.getElementById('通常金額').value;
         const 交渉金額 = document.getElementById('交渉金額').value;
-        const仕入先 = document.getElementById('仕入先').value;
+        const 仕入先 = document.getElementById('仕入先').value;
 
         localStorage.setItem("saved_month", month);
         localStorage.setItem("saved_user", 担当者);
@@ -350,6 +344,7 @@
         }
     });
 
+    // 🚀 優化後的 CSV 匯出功能（高度相容全螢幕模式）
     exportBtn.addEventListener('click', function() {
         if (dataList.length === 0) {
             alert('出力するデータがありません。');
@@ -363,18 +358,36 @@
             csvContent += `${row.month},"${row.分類}","${row.担当者.replace(/"/g, '""')}","${row.メーカー.replace(/"/g, '""')}","${row.物件名.replace(/"/g, '""')}",${row.通常金額},${row.交渉金額},,"${row.仕入先.replace(/"/g, '""')}"\n`;
         });
 
+        // 建立 Blob 物件
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        
-        const date = new Date().toISOString().slice(0,10);
-        link.setAttribute("href", url);
-        link.setAttribute("download", `変動費出力_${date}.csv`);
-        link.style.visibility = 'hidden';
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const dateStr = new Date().toISOString().slice(0,10);
+        const fileName = `変動費出力_${dateStr}.csv`;
+
+        // 🌟 針對各瀏覽器與全螢幕 App 模式的最高相容性觸發下載法
+        if (navigator.msSaveBlob) { 
+            // 舊版 IE / Edge 支援
+            navigator.msSaveBlob(blob, fileName);
+        } else {
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", fileName);
+                
+                // 必須將元素真正加到 DOM tree 中，在手機獨立 App 視窗內才能正確觸發點擊事件
+                document.body.appendChild(link);
+                link.click();
+                
+                // 延遲移除，確保手機系統有足夠時間接收下載指令
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 100);
+            } else {
+                // 如果連下載屬性都不支援，直接透過視窗開啟，強制系統彈出下載或另存
+                window.open(encodeURI("data:text/csv;charset=utf-8," + csvContent));
+            }
+        }
     });
 </script>
 
