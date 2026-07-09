@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>変動費入力フォーム</title>
     
+    <!-- スマホアプリ化の設定 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="変動費記録">
     <meta name="mobile-web-app-capable" content="yes">
     
+    <!-- アプリアイコンの設定 -->
     <link rel="icon" href="https://fav.farm/📝">
     <link rel="apple-touch-icon" href="https://fav.farm/📝">
 
@@ -24,7 +26,6 @@
             margin: 0;
             padding: 15px;
             color: #333;
-            /* 防止手機網頁在全螢幕模式下被頂部劉海遮擋 */
             padding-top: calc(15px + env(safe-area-inset-top));
         }
         .container {
@@ -115,6 +116,19 @@
             font-size: 0.85rem;
             margin-top: 10px;
         }
+        .btn-inline-delete {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-inline-delete:active {
+            background-color: #dc2626;
+        }
         .table-container {
             overflow-x: auto;
         }
@@ -140,6 +154,7 @@
 <div class="container">
     <h2>変動費記録（スマホ用）</h2>
     
+    <!-- 入力フォーム -->
     <div class="card">
         <form id="expenseForm">
             <div class="form-row" style="margin-bottom: 16px;">
@@ -174,7 +189,7 @@
                     <option value="宿泊費">宿泊費</option>
                     <option value="送料">送料</option>
                     <option value="値引き">値引き</option>
-                    <option value="仕入値引き">仕入便引き</option>
+                    <option value="仕入値引き">仕入値引き</option>
                     <option value="その他">その他</option>
                 </select>
             </div>
@@ -212,12 +227,14 @@
         <button id="clearBtn" class="btn btn-danger" style="display:none;">履歴クリア</button>
     </div>
 
+    <!-- 履歴一覧 -->
     <div class="card">
         <label>入力履歴（自動保存済み）</label>
         <div class="table-container">
             <table id="historyTable">
                 <thead>
                     <tr>
+                        <th>操作</th>
                         <th>月</th>
                         <th>分類</th>
                         <th>担当者</th>
@@ -229,7 +246,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    </tbody>
+                    <!-- データがここに追加されます -->
+                </tbody>
             </table>
         </div>
     </div>
@@ -266,9 +284,10 @@
 
     function renderTable() {
         tableBody.innerHTML = "";
-        dataList.forEach(row => {
+        dataList.forEach((row, index) => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
+                <td><button class="btn-inline-delete" onclick="deleteRow(${index})">削除</button></td>
                 <td>${row.month}</td>
                 <td>${row.分類}</td>
                 <td>${row.担当者}</td>
@@ -283,6 +302,15 @@
         updateClearButtonVisibility();
     }
 
+    // 單行刪除功能
+    window.deleteRow = function(index) {
+        if(confirm("この行のデータを削除しますか？")) {
+            dataList.splice(index, 1); // 刪除陣列中指定位置的資料
+            localStorage.setItem("permanent_data_list", JSON.stringify(dataList)); // 更新永久儲存
+            renderTable(); // 重新繪製表格
+        }
+    }
+
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -293,7 +321,7 @@
         const 物件名 = document.getElementById('物件名_品名_型番').value;
         const 通常金額 = document.getElementById('通常金額').value;
         const 交渉金額 = document.getElementById('交渉金額').value;
-        const 仕入先 = document.getElementById('仕入先').value;
+        const仕入先 = document.getElementById('仕入先').value;
 
         localStorage.setItem("saved_month", month);
         localStorage.setItem("saved_user", 担当者);
@@ -349,6 +377,6 @@
         document.body.removeChild(link);
     });
 </script>
- 
+
 </body>
 </html>
