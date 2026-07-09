@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>変動費入力フォーム</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="変動費記録">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <link rel="icon" href="https://fav.farm/📝">
+    <link rel="apple-touch-icon" href="https://fav.farm/📝">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 15px;
+            color: #333;
+            /* 防止手機網頁在全螢幕模式下被頂部劉海遮擋 */
+            padding-top: calc(15px + env(safe-area-inset-top));
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h2 {
+            text-align: center;
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-row {
+            display: table;
+            width: 100%;
+        }
+        .form-col {
+            display: table-cell;
+            width: 50%;
+        }
+        .form-col:first-child {
+            padding-right: 8px;
+        }
+        .form-col:last-child {
+            padding-left: 8px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3182ce;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+        }
+        .btn-primary {
+            background-color: #3182ce;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .btn-primary:active {
+            background-color: #2b6cb0;
+        }
+        .btn-success {
+            background-color: #38a169;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .btn-success:active {
+            background-color: #2f855a;
+        }
+        .btn-danger {
+            background-color: #e53e3e;
+            color: white;
+            padding: 8px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 10px 8px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #edf2f7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>変動費記録（スマホ用）</h2>
+    
+    <div class="card">
+        <form id="expenseForm">
+            <div class="form-row" style="margin-bottom: 16px;">
+                <div class="form-col">
+                    <label for="month">月</label>
+                    <select id="month" required>
+                        <option value="1">1月</option>
+                        <option value="2">2月</option>
+                        <option value="3">3月</option>
+                        <option value="4">4月</option>
+                        <option value="5">5月</option>
+                        <option value="6">6月</option>
+                        <option value="7">7月</option>
+                        <option value="8">8月</option>
+                        <option value="9">9月</option>
+                        <option value="10">10月</option>
+                        <option value="11">11月</option>
+                        <option value="12">12月</option>
+                    </select>
+                </div>
+                <div class="form-col">
+                    <label for="担当者">担当者</label>
+                    <input type="text" id="担当者" placeholder="氏名" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="分類">分類</label>
+                <select id="分類" required>
+                    <option value="">-- 選択してください --</option>
+                    <option value="交通費">交通費</option>
+                    <option value="宿泊費">宿泊費</option>
+                    <option value="送料">送料</option>
+                    <option value="値引き">値引き</option>
+                    <option value="仕入値引き">仕入便引き</option>
+                    <option value="その他">その他</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="メーカー">メーカー</label>
+                <input type="text" id="メーカー" placeholder="任意入力">
+            </div>
+
+            <div class="form-group">
+                <label for="物件名_品名_型番">物件名・品名・型番</label>
+                <textarea id="物件名_品名_型番" rows="2" placeholder="詳細を入力してください" required></textarea>
+            </div>
+            
+            <div class="form-row" style="margin-bottom: 16px;">
+                <div class="form-col">
+                    <label for="通常金額">通常金額</label>
+                    <input type="number" id="通常金額" inputmode="numeric" placeholder="0" required>
+                </div>
+                <div class="form-col">
+                    <label for="交渉金額">交渉金額</label>
+                    <input type="number" id="交渉金額" inputmode="numeric" placeholder="0" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="仕入先">仕入先（日付・注文番号など）</label>
+                <input type="text" id="仕入先" placeholder="例: 5/13注文分">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">データを追加</button>
+        </form>
+        
+        <button id="exportBtn" class="btn btn-success">Excel用CSV出力</button>
+        <button id="clearBtn" class="btn btn-danger" style="display:none;">履歴クリア</button>
+    </div>
+
+    <div class="card">
+        <label>入力履歴（自動保存済み）</label>
+        <div class="table-container">
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>月</th>
+                        <th>分類</th>
+                        <th>担当者</th>
+                        <th>メーカー</th>
+                        <th>物件名・品名・型番</th>
+                        <th>通常金額</th>
+                        <th>交渉金額</th>
+                        <th>仕入先</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('expenseForm');
+    const tableBody = document.querySelector('#historyTable tbody');
+    const exportBtn = document.getElementById('exportBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    let dataList = JSON.parse(localStorage.getItem("permanent_data_list")) || [];
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const savedMonth = localStorage.getItem("saved_month");
+        const savedUser = localStorage.getItem("saved_user");
+        
+        if (savedMonth) {
+            document.getElementById("month").value = savedMonth;
+        } else {
+            document.getElementById("month").value = new Date().getMonth() + 1;
+        }
+        
+        if (savedUser) {
+            document.getElementById("担当者").value = savedUser;
+        }
+        
+        renderTable();
+    });
+
+    function updateClearButtonVisibility() {
+        clearBtn.style.display = dataList.length > 0 ? 'block' : 'none';
+    }
+
+    function renderTable() {
+        tableBody.innerHTML = "";
+        dataList.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row.month}</td>
+                <td>${row.分類}</td>
+                <td>${row.担当者}</td>
+                <td>${row.メーカー}</td>
+                <td>${row.物件名}</td>
+                <td>${parseInt(row.通常金額).toLocaleString()}</td>
+                <td>${parseInt(row.交渉金額).toLocaleString()}</td>
+                <td>${row.仕入先}</td>
+            `;
+            tableBody.appendChild(tr);
+        });
+        updateClearButtonVisibility();
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const month = document.getElementById('month').value;
+        const 担当者 = document.getElementById('担当者').value;
+        const 分類 = document.getElementById('分類').value;
+        const メーカー = document.getElementById('メーカー').value;
+        const 物件名 = document.getElementById('物件名_品名_型番').value;
+        const 通常金額 = document.getElementById('通常金額').value;
+        const 交渉金額 = document.getElementById('交渉金額').value;
+        const 仕入先 = document.getElementById('仕入先').value;
+
+        localStorage.setItem("saved_month", month);
+        localStorage.setItem("saved_user", 担当者);
+
+        const dataRow = { month, 分類, 担当者, メーカー, 物件名, 通常金額, 交渉金額, 仕入先 };
+        dataList.push(dataRow);
+        localStorage.setItem("permanent_data_list", JSON.stringify(dataList));
+
+        renderTable();
+
+        document.getElementById('分類').value = "";
+        document.getElementById('メーカー').value = "";
+        document.getElementById('物件名_品名_型番').value = "";
+        document.getElementById('通常金額').value = "";
+        document.getElementById('交渉金額').value = "";
+        document.getElementById('仕入先').value = "";
+        
+        document.getElementById('分類').focus();
+    });
+
+    clearBtn.addEventListener('click', function() {
+        if(confirm("保存されているすべての履歴を削除しますか？\n（出力前のデータは消去されます）")) {
+            dataList = [];
+            localStorage.removeItem("permanent_data_list");
+            renderTable();
+        }
+    });
+
+    exportBtn.addEventListener('click', function() {
+        if (dataList.length === 0) {
+            alert('出力するデータがありません。');
+            return;
+        }
+
+        let csvContent = "\uFEFF"; 
+        csvContent += "月,分類,担当者,メーカー,物件名・品名・型番,通常金額,交渉金額,削減額,仕入先\n";
+
+        dataList.forEach(row => {
+            csvContent += `${row.month},"${row.分類}","${row.担当者.replace(/"/g, '""')}","${row.メーカー.replace(/"/g, '""')}","${row.物件名.replace(/"/g, '""')}",${row.通常金額},${row.交渉金額},,"${row.仕入先.replace(/"/g, '""')}"\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        
+        const date = new Date().toISOString().slice(0,10);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `変動費出力_${date}.csv`);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+</script>
+
+</body>
+</html>
